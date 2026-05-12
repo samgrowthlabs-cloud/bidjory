@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Projetos Bidjory - Hub de iniciativas em finanças, mídia e tecnologia.">
+    <title>Projetos</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23000'/><text x='16' y='22' text-anchor='middle' font-family='system-ui' font-size='18' font-weight='700' fill='%23fff'>B</text></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header" id="header">
+        <div class="container header-inner">
+            <a href="/" class="logo">
+                <span class="logo-mark">B</span>
+                <span class="logo-text">Bidjory</span>
+            </a>
+            <nav class="nav" id="nav">
+                <ul class="nav-list">
+                    <li><a href="/" class="nav-link">Home</a></li>
+                    <li><a href="/projetos/" class="nav-link active">Projetos</a></li>
+                    <li><a href="/sobre/" class="nav-link">Sobre</a></li>
+                    <li><a href="/contato/" class="nav-link">Contato</a></li>
+                </ul>
+            </nav>
+            <button class="hamburger" id="hamburger" aria-label="Menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="projetos-section">
+            <div class="container">
+                <p class="section-overline reveal">Portfólio</p>
+                <h1 class="section-title reveal">Projetos</h1>
+                <div class="projetos-grid" id="projetosGrid">
+                    <!-- Renderizado via JS -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <span>&copy; <span id="year"></span> Bidjory</span>
+        </div>
+    </footer>
+
+    <script src="../script.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

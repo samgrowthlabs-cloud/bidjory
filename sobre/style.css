@@ -1,0 +1,80 @@
+/* Sobre - estilos específicos */
+
+.sobre-section {
+    min-height: 100vh;
+    padding: 120px 0 var(--space-2xl);
+}
+
+.section-overline {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+}
+
+.section-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: var(--space-xl);
+}
+
+.sobre-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    max-width: 680px;
+    margin-bottom: var(--space-xl);
+}
+
+.sobre-block {
+    display: flex;
+    gap: var(--space-md);
+    align-items: flex-start;
+}
+
+.sobre-year {
+    flex-shrink: 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary);
+    background: #f5f5f5;
+    padding: 4px 12px;
+    border-radius: 6px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.sobre-block p {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.sobre-visao {
+    max-width: 680px;
+    padding: var(--space-md);
+    border-left: 3px solid var(--primary);
+    background: #fafafa;
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.sobre-visao p {
+    font-size: 1.15rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .sobre-block {
+        flex-direction: column;
+        gap: var(--space-xs);
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+    }
+}

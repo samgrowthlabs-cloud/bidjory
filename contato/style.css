@@ -1,0 +1,57 @@
+/* Contato - estilos específicos */
+
+.contato-section {
+    min-height: 100vh;
+    padding: 120px 0 var(--space-2xl);
+}
+
+.section-overline {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: var(--space-sm);
+}
+
+.section-title {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    margin-bottom: var(--space-xl);
+}
+
+.contato-content {
+    max-width: 500px;
+}
+
+.contato-email {
+    display: inline-block;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--primary);
+    border-bottom: 2px solid transparent;
+    transition: border-color var(--transition);
+    margin-bottom: var(--space-md);
+}
+
+.contato-email:hover {
+    border-bottom-color: var(--primary);
+}
+
+.contato-texto {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+    .contato-email {
+        font-size: 1.4rem;
+    }
+
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
