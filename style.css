@@ -1,6 +1,6 @@
 /* ==========================================
-   BIDJORY - Design System Global
-   Variáveis CSS controladas via JS (theme)
+   BIDJORY - Design System
+   Home page — clean, sem CTA duplicado
    ========================================== */
 
 :root {
@@ -10,7 +10,8 @@
     --background: #ffffff;
     --text: #000000;
     --text-secondary: #555555;
-    --border: #e5e5e5;
+    --muted: #777777;
+    --border: #e8e8e8;
     
     --status-active: #10b981;
     --status-testing: #f59e0b;
@@ -25,6 +26,7 @@
     --space-lg: 48px;
     --space-xl: 80px;
     --space-2xl: 120px;
+    --space-3xl: 160px;
     
     --max-width: 1100px;
     --radius: 12px;
@@ -66,6 +68,9 @@ img, svg {
     max-width: 100%;
 }
 
+/* ==========================================
+   CONTAINER
+   ========================================== */
 .container {
     width: 100%;
     max-width: var(--max-width);
@@ -73,10 +78,12 @@ img, svg {
     padding: 0 24px;
 }
 
-/* Reveal animation */
+/* ==========================================
+   REVEAL ANIMATION
+   ========================================== */
 .reveal {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(20px);
     transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
@@ -85,7 +92,9 @@ img, svg {
     transform: translateY(0);
 }
 
-/* Header */
+/* ==========================================
+   HEADER
+   ========================================== */
 .header {
     position: fixed;
     top: 0;
@@ -101,7 +110,7 @@ img, svg {
 
 .header.scrolled {
     border-bottom-color: var(--border);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
 }
 
 .header-inner {
@@ -116,8 +125,9 @@ img, svg {
     align-items: center;
     gap: 10px;
     font-weight: 700;
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     color: var(--primary);
+    letter-spacing: -0.02em;
 }
 
 .logo-mark {
@@ -191,7 +201,7 @@ img, svg {
     display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.3);
     z-index: 99;
     opacity: 0;
     transition: opacity var(--transition);
@@ -202,7 +212,9 @@ img, svg {
     opacity: 1;
 }
 
-/* Buttons */
+/* ==========================================
+   BUTTONS
+   ========================================== */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -214,6 +226,7 @@ img, svg {
     transition: all var(--transition);
     border: 1.5px solid transparent;
     cursor: pointer;
+    letter-spacing: -0.01em;
 }
 
 .btn-primary {
@@ -224,6 +237,7 @@ img, svg {
 
 .btn-primary:hover {
     background: #1a1a1a;
+    transform: translateY(-1px);
 }
 
 .btn-outline {
@@ -237,23 +251,26 @@ img, svg {
     background: #fafafa;
 }
 
-/* Hero */
+/* ==========================================
+   HERO
+   ========================================== */
 .hero {
-    min-height: 100vh;
+    min-height: 85vh;
     display: flex;
     align-items: center;
     padding-top: 64px;
+    padding-bottom: var(--space-xl);
 }
 
 .hero-content {
-    max-width: 700px;
+    max-width: 720px;
 }
 
 .hero-overline {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--accent);
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     margin-bottom: var(--space-md);
 }
@@ -266,11 +283,12 @@ img, svg {
 }
 
 .hero-headline {
-    font-size: 3.6rem;
+    font-size: 3.4rem;
     font-weight: 800;
     letter-spacing: -0.04em;
-    line-height: 1.1;
+    line-height: 1.12;
     margin-bottom: var(--space-md);
+    color: var(--primary);
 }
 
 .hero-tags {
@@ -295,7 +313,37 @@ img, svg {
     flex-wrap: wrap;
 }
 
-/* Footer */
+/* ==========================================
+   INTRO - Seção institucional
+   ========================================== */
+.intro {
+    padding: var(--space-xl) 0 var(--space-2xl);
+    border-top: 1px solid var(--border);
+}
+
+.intro-content {
+    max-width: 720px;
+}
+
+.intro-text {
+    font-size: 1.45rem;
+    line-height: 1.55;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 1.2rem;
+    letter-spacing: -0.02em;
+}
+
+.intro-subtext {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: var(--muted);
+    font-weight: 400;
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
 .footer {
     padding: var(--space-lg) 0;
     border-top: 1px solid var(--border);
@@ -304,79 +352,31 @@ img, svg {
     color: #999;
 }
 
-/* Section titles */
-.section-title {
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    margin-bottom: var(--space-lg);
-}
-
-/* Cards (shared) */
-.card {
-    background: var(--secondary);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px;
-    transition: border-color var(--transition), box-shadow var(--transition);
-}
-
-.card:hover {
-    border-color: #ccc;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-}
-
-/* Status badges */
-.status {
-    display: inline-block;
-    font-size: 0.72rem;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-.status-active {
-    background: rgba(16,185,129,0.1);
-    color: var(--status-active);
-}
-
-.status-testing {
-    background: rgba(245,158,11,0.1);
-    color: var(--status-testing);
-}
-
-.status-building {
-    background: rgba(59,130,246,0.1);
-    color: var(--status-building);
-}
-
-.status-inactive {
-    background: rgba(156,163,175,0.1);
-    color: var(--status-inactive);
-}
-
-/* Tag */
-.tag {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--accent);
-    background: #f5f5f5;
-    padding: 3px 10px;
-    border-radius: 4px;
-}
-
 /* ==========================================
    RESPONSIVE
    ========================================== */
+
+/* Tablet */
 @media (max-width: 768px) {
     .hero-headline {
-        font-size: 2.4rem;
+        font-size: 2.2rem;
     }
 
-    .section-title {
-        font-size: 1.6rem;
+    .hero {
+        min-height: 65vh;
+        padding-bottom: var(--space-lg);
+    }
+
+    .intro {
+        padding: var(--space-lg) 0;
+    }
+
+    .intro-text {
+        font-size: 1.2rem;
+    }
+
+    .intro-subtext {
+        font-size: 0.95rem;
     }
 
     .hamburger {
@@ -392,7 +392,7 @@ img, svg {
         background: var(--secondary);
         padding: 100px 32px 32px;
         transition: right var(--transition);
-        box-shadow: -4px 0 20px rgba(0,0,0,0.06);
+        box-shadow: -4px 0 20px rgba(0, 0, 0, 0.06);
         z-index: 100;
     }
 
@@ -410,9 +410,14 @@ img, svg {
     }
 }
 
+/* Mobile pequeno */
 @media (max-width: 480px) {
+    .container {
+        padding: 0 16px;
+    }
+
     .hero-headline {
-        font-size: 1.9rem;
+        font-size: 1.8rem;
     }
 
     .hero-tags {
@@ -428,7 +433,11 @@ img, svg {
         justify-content: center;
     }
 
-    .container {
-        padding: 0 16px;
+    .intro-text {
+        font-size: 1.05rem;
+    }
+
+    .intro-subtext {
+        font-size: 0.9rem;
     }
 }

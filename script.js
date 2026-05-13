@@ -3,9 +3,6 @@
  * Tema, navegação, animações
  */
 
-// ==========================================
-// SISTEMA DE TEMA
-// ==========================================
 const theme = {
     primaryColor: "#000000",
     secondaryColor: "#ffffff",
@@ -13,7 +10,8 @@ const theme = {
     background: "#ffffff",
     text: "#000000",
     textSecondary: "#555555",
-    borderColor: "#e5e5e5",
+    muted: "#777777",
+    borderColor: "#e8e8e8",
     statusColors: {
         active: "#10b981",
         testing: "#f59e0b",
@@ -30,6 +28,7 @@ function applyTheme(t) {
     root.style.setProperty('--background', t.background);
     root.style.setProperty('--text', t.text);
     root.style.setProperty('--text-secondary', t.textSecondary);
+    root.style.setProperty('--muted', t.muted);
     root.style.setProperty('--border', t.borderColor);
     root.style.setProperty('--status-active', t.statusColors.active);
     root.style.setProperty('--status-testing', t.statusColors.testing);
@@ -39,7 +38,6 @@ function applyTheme(t) {
 
 applyTheme(theme);
 
-// Exporta para console
 window.Bidjory = {
     theme,
     applyTheme,
@@ -49,26 +47,25 @@ window.Bidjory = {
     }
 };
 
-// ==========================================
-// REVEAL ANIMATIONS
-// ==========================================
 function initReveal() {
     const elements = document.querySelectorAll('.reveal');
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry, index) => {
             if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
+                const delay = Math.min(index * 80, 400);
+                setTimeout(() => {
+                    entry.target.classList.add('visible');
+                }, delay);
                 observer.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.15 });
-
+    }, { 
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px'
+    });
     elements.forEach(el => observer.observe(el));
 }
 
-// ==========================================
-// MOBILE MENU
-// ==========================================
 function initMobileMenu() {
     const hamburger = document.getElementById('hamburger');
     const nav = document.getElementById('nav');
@@ -78,19 +75,21 @@ function initMobileMenu() {
     overlay.className = 'nav-overlay';
     document.body.appendChild(overlay);
 
-    const open = () => {
+    function open() {
         nav.classList.add('active');
         overlay.classList.add('active');
         hamburger.classList.add('active');
+        hamburger.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
-    };
+    }
 
-    const close = () => {
+    function close() {
         nav.classList.remove('active');
         overlay.classList.remove('active');
         hamburger.classList.remove('active');
+        hamburger.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
-    };
+    }
 
     hamburger.addEventListener('click', () => {
         nav.classList.contains('active') ? close() : open();
@@ -103,31 +102,23 @@ function initMobileMenu() {
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') close();
+        if (e.key === 'Escape' && nav.classList.contains('active')) close();
     });
 }
 
-// ==========================================
-// HEADER SCROLL
-// ==========================================
 function initHeaderScroll() {
     const header = document.getElementById('header');
+    if (!header) return;
     window.addEventListener('scroll', () => {
-        header?.classList.toggle('scrolled', window.scrollY > 10);
+        header.classList.toggle('scrolled', window.scrollY > 10);
     }, { passive: true });
 }
 
-// ==========================================
-// FOOTER YEAR
-// ==========================================
 function updateYear() {
     const el = document.getElementById('year');
     if (el) el.textContent = new Date().getFullYear();
 }
 
-// ==========================================
-// INIT
-// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     initReveal();
     initMobileMenu();
