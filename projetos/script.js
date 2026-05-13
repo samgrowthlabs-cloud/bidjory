@@ -32,7 +32,7 @@ const projects = [
         description: "Conteúdo, histórias e vídeos de alta qualidade sobre finanças, mercado financeiro e comportamento econômico.",
         status: "active",
         tags: ["Conteúdo", "Vídeos", "Storytelling"],
-        year: "2024",
+        year: "2026",
         link: "https://samzin.samgrowthlabs.com.br",
         category: "media",
         progress: 90
