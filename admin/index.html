@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Projetos | Bidjory</title>
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+
+  <!-- LOGIN -->
+  <section id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <h1>Login Admin</h1>
+      <p>Digite seu token para acessar o painel de projetos.</p>
+
+      <label>
+        Token Admin
+        <input type="password" id="loginToken" placeholder="Cole seu ADMIN_TOKEN">
+      </label>
+
+      <button id="loginBtn" type="button">Entrar</button>
+
+      <p id="loginMessage"></p>
+    </div>
+  </section>
+
+  <!-- PAINEL ADMIN -->
+  <main id="adminPanel" class="admin-container hidden">
+    <section class="admin-header">
+      <div>
+        <h1>Admin de Projetos</h1>
+        <p>Crie, edite e delete projetos da sua marca pessoal.</p>
+      </div>
+
+      <button id="logoutBtn" type="button" class="secondary">Sair</button>
+    </section>
+
+    <section class="admin-grid">
+      <form id="projectForm" class="admin-card">
+        <h2 id="formTitle">Novo projeto</h2>
+
+        <input type="hidden" id="projectId">
+
+        <label>
+          Título
+          <input type="text" id="title" required>
+        </label>
+
+        <label>
+          Descrição
+          <textarea id="description" rows="4"></textarea>
+        </label>
+
+        <div class="row">
+          <label>
+            Status
+            <select id="status">
+              <option value="active">Ativo</option>
+              <option value="building">Em desenvolvimento</option>
+              <option value="testing">Em laboratório</option>
+              <option value="inactive">Pausado</option>
+            </select>
+          </label>
+
+          <label>
+            Progresso
+            <input type="number" id="progress" min="0" max="100" value="0">
+          </label>
+        </div>
+
+        <label>
+          Tags
+          <input type="text" id="tags" placeholder="Finanças, Mídia, Growth">
+        </label>
+
+        <div class="row">
+          <label>
+            Ano
+            <input type="text" id="year" placeholder="2026">
+          </label>
+
+          <label>
+            Categoria
+            <input type="text" id="category" placeholder="media">
+          </label>
+        </div>
+
+        <label>
+          Link
+          <input type="url" id="link" placeholder="https://exemplo.com">
+        </label>
+
+        <div class="actions">
+          <button type="submit" id="submitBtn">Criar projeto</button>
+          <button type="button" id="cancelEditBtn" class="secondary hidden">Cancelar edição</button>
+        </div>
+
+        <p id="message"></p>
+      </form>
+
+      <section class="admin-card">
+        <div class="list-header">
+          <h2>Projetos cadastrados</h2>
+          <button id="reloadBtn" type="button" class="secondary">Atualizar</button>
+        </div>
+
+        <div id="projectsList" class="projects-list">
+          <p class="muted">Carregando projetos...</p>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="admin.js"></script>
+</body>
+</html>
