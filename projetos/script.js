@@ -15,6 +15,31 @@ const statusLabels = {
 };
 
 // ==========================================
+// COR DINÂMICA DO PROGRESSO
+// ==========================================
+function getProgressColor(progress) {
+    if (progress <= 50) {
+        // vermelho → azul
+        const ratio = progress / 50;
+
+        const r = Math.round(239 + (59 - 239) * ratio);
+        const g = Math.round(68 + (130 - 68) * ratio);
+        const b = Math.round(68 + (246 - 68) * ratio);
+
+        return `rgb(${r}, ${g}, ${b})`;
+    }
+
+    // azul → verde
+    const ratio = (progress - 50) / 50;
+
+    const r = Math.round(59 + (34 - 59) * ratio);
+    const g = Math.round(130 + (197 - 130) * ratio);
+    const b = Math.round(246 + (94 - 246) * ratio);
+
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+// ==========================================
 // CARREGAR PROJETOS DO D1
 // ==========================================
 async function loadProjects() {
@@ -81,20 +106,13 @@ function renderProjects() {
         const linkClass = hasLink ? 'projeto-link projeto-link--active' : 'projeto-link projeto-link--disabled';
         const linkText = hasLink ? 'Ver projeto' : 'Em breve';
 
-        const linkIcon = hasLink 
+        const linkIcon = hasLink
             ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 3h7v7M11 3L3 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
             : '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M5 7h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
 
-        const progressColors = {
-            active: 'var(--status-active)',
-            testing: 'var(--status-testing)',
-            building: 'var(--status-building)',
-            inactive: 'var(--status-inactive)'
-        };
-
         const tags = Array.isArray(project.tags) ? project.tags : [];
         const progress = Math.min(Math.max(Number(project.progress || 0), 0), 100);
-        const progressColor = progressColors[project.status] || 'var(--status-building)';
+        const progressColor = getProgressColor(progress);
 
         card.innerHTML = `
             <div class="projeto-header">
@@ -109,8 +127,8 @@ function renderProjects() {
             </div>
 
             <div class="projeto-progress">
-                <div 
-                    class="projeto-progress-bar" 
+                <div
+                    class="projeto-progress-bar"
                     style="width: ${progress}%; background: ${progressColor};">
                 </div>
             </div>
