@@ -9,9 +9,13 @@ const API_URL = "https://bidjory-api.bidjorysamuel.workers.dev/projects";
 
 const statusLabels = {
     active: "Ativo",
+    building: "Em desenvolvimento",
     testing: "Em laboratório",
-    building: "Em desenvol",
-    inactive: "Pausado"
+    beta: "Beta público",
+    maintenance: "Manutenção",
+    private: "Privado",
+    archived: "Arquivado",
+    inactive: "Descontinuado"
 };
 
 // ==========================================
@@ -100,15 +104,39 @@ function renderProjects() {
         const statusLabel = statusLabels[project.status] || project.status || "Indefinido";
         const statusClass = `status-${project.status || "building"}`;
 
-        const hasLink = project.link && project.link !== '#';
-        const linkHref = hasLink ? project.link : '#';
-        const linkTarget = hasLink ? ' target="_blank" rel="noopener noreferrer"' : '';
-        const linkClass = hasLink ? 'projeto-link projeto-link--active' : 'projeto-link projeto-link--disabled';
-        const linkText = hasLink ? 'Ver projeto' : 'Em breve';
+        const clickableStatuses = ["active", "building", "beta"];
+
+
+        const hasLink =
+            clickableStatuses.includes(project.status) &&
+            project.link &&
+            project.link !== "#";
+
+        const linkHref = hasLink ? project.link : "#";
+
+        const linkTarget = hasLink
+            ? ' target="_blank" rel="noopener noreferrer"'
+            : "";
+
+        const linkClass = hasLink
+            ? "projeto-link projeto-link--active"
+            : "projeto-link projeto-link--disabled";
+
+        const disabledLinkTexts = {
+            testing: "Em breve",
+            maintenance: "Em manutenção",
+            private: "Privado",
+            archived: "Arquivado",
+            inactive: "Descontinuado"
+        };
+
+        const linkText = hasLink
+            ? "Ver projeto"
+            : disabledLinkTexts[project.status] || "Indisponível";
 
         const linkIcon = hasLink
-            ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M4 3h7v7M11 3L3 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-            : '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M5 7h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
+                ? '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M4 3h7v7M11 3L3 11" stroke="currentColor" stroke-width="1.5"/></svg>'
+                : '<svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>';
 
         const tags = Array.isArray(project.tags) ? project.tags : [];
         const progress = Math.min(Math.max(Number(project.progress || 0), 0), 100);

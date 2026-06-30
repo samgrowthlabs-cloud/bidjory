@@ -627,3 +627,66 @@
         radial-gradient(circle at 30% 20%, rgba(45, 212, 191, 0.22), transparent 36%),
         linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(8, 13, 20, 0.95));
 }
+.projeto-link--disabled {
+    color: #64748b;
+    border-color: rgba(148, 163, 184, 0.10);
+    background: rgba(148, 163, 184, 0.04);
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.65;
+    box-shadow: none;
+}
+.projeto-link--disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+/* STATUS COLORS */
+
+.status-active {
+    color: #2dd4bf; /* verde água */
+    border-color: rgba(45, 212, 191, 0.24);
+    background: rgba(45, 212, 191, 0.08);
+}
+
+.status-building {
+    color: #60a5fa; /* azul */
+    border-color: rgba(96, 165, 250, 0.24);
+    background: rgba(96, 165, 250, 0.09);
+}
+
+.status-testing {
+    color: #fbbf24; /* amarelo */
+    border-color: rgba(251, 191, 36, 0.24);
+    background: rgba(251, 191, 36, 0.09);
+}
+
+.status-beta {
+    color: #c084fc; /* roxo */
+    border-color: rgba(192, 132, 252, 0.24);
+    background: rgba(192, 132, 252, 0.09);
+}
+
+.status-maintenance {
+    color: #fb923c; /* laranja */
+    border-color: rgba(251, 146, 60, 0.24);
+    background: rgba(251, 146, 60, 0.09);
+}
+
+.status-private {
+    color: #f472b6; /* rosa */
+    border-color: rgba(244, 114, 182, 0.24);
+    background: rgba(244, 114, 182, 0.09);
+}
+
+.status-archived {
+    color: #94a3b8; /* cinza azulado */
+    border-color: rgba(148, 163, 184, 0.20);
+    background: rgba(148, 163, 184, 0.09);
+}
+
+.status-inactive {
+    color: #ef4444; /* vermelho */
+    border-color: rgba(239, 68, 68, 0.24);
+    background: rgba(239, 68, 68, 0.09);
+}
