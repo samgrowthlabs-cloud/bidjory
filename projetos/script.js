@@ -10,7 +10,7 @@ const API_URL = "https://bidjory-api.bidjorysamuel.workers.dev/projects";
 const statusLabels = {
     active: "Ativo",
     testing: "Em laboratório",
-    building: "Em desenvolvimento",
+    building: "Em desenvol",
     inactive: "Pausado"
 };
 
@@ -121,7 +121,7 @@ function renderProjects() {
                 ? `<div class="projeto-banner"><img src="${project.banner}" alt="Banner do projeto ${project.title || ""}"></div>`
                 : `<div class="projeto-banner projeto-banner--fallback"></div>`
             }
-            
+
             ${
             project.avatar
                 ? `<div class="projeto-avatar"><img src="${project.avatar}" alt="${project.title || "Projeto"}"></div>`
