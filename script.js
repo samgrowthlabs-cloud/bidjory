@@ -4,19 +4,19 @@
  */
 
 const theme = {
-    primaryColor: "#000000",
-    secondaryColor: "#ffffff",
-    accentColor: "#666666",
-    background: "#ffffff",
-    text: "#000000",
-    textSecondary: "#555555",
-    muted: "#777777",
-    borderColor: "#e8e8e8",
+    primaryColor: "#2dd4bf",
+    secondaryColor: "#080d14",
+    accentColor: "#2dd4bf",
+    background: "#070b12",
+    text: "#f8fafc",
+    textSecondary: "#b8c4d6",
+    muted: "#8b9bb0",
+    borderColor: "rgba(45, 212, 191, 0.18)",
     statusColors: {
-        active: "#10b981",
+        active: "#2dd4bf",
         testing: "#f59e0b",
         building: "#3b82f6",
-        inactive: "#9ca3af"
+        inactive: "#64748b"
     }
 };
 

@@ -296,3 +296,15 @@ button.danger {
   align-items: center;
   gap: 16px;
 }
+
+.avatar-preview {
+  margin-top: 10px;
+}
+
+.avatar-preview img {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 18px;
+  border: 1px solid rgba(45, 212, 191, 0.35);
+}

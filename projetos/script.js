@@ -115,6 +115,18 @@ function renderProjects() {
         const progressColor = getProgressColor(progress);
 
         card.innerHTML = `
+
+            ${
+            project.banner
+                ? `<div class="projeto-banner"><img src="${project.banner}" alt="Banner do projeto ${project.title || ""}"></div>`
+                : `<div class="projeto-banner projeto-banner--fallback"></div>`
+            }
+            
+            ${
+            project.avatar
+                ? `<div class="projeto-avatar"><img src="${project.avatar}" alt="${project.title || "Projeto"}"></div>`
+                : `<div class="projeto-avatar projeto-avatar--fallback">B</div>`
+            }
             <div class="projeto-header">
                 <h3 class="projeto-title">${project.title || ""}</h3>
                 <span class="status ${statusClass}">${statusLabel}</span>
@@ -126,11 +138,15 @@ function renderProjects() {
                 ${tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
             </div>
 
-            <div class="projeto-progress">
-                <div
-                    class="projeto-progress-bar"
-                    style="width: ${progress}%; background: ${progressColor};">
+            <div class="projeto-progress-row">
+                <div class="projeto-progress">
+                    <div
+                        class="projeto-progress-bar"
+                        style="width: ${progress}%; background: ${progressColor};">
+                    </div>
                 </div>
+
+                <span class="projeto-progress-percent">${progress}%</span>
             </div>
 
             <div class="projeto-footer">

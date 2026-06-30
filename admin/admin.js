@@ -25,6 +25,12 @@ const cancelEditBtn = document.getElementById("cancelEditBtn");
 const reloadBtn = document.getElementById("reloadBtn");
 const message = document.getElementById("message");
 const projectsList = document.getElementById("projectsList");
+const avatarInput = document.getElementById("avatar");
+const avatarFileInput = document.getElementById("avatarFile");
+const avatarPreview = document.getElementById("avatarPreview");
+const bannerInput = document.getElementById("banner");
+const bannerFileInput = document.getElementById("bannerFile");
+const bannerPreview = document.getElementById("bannerPreview");
 
 let projects = [];
 
@@ -71,11 +77,19 @@ function getProjectFromForm() {
     year: yearInput.value.trim(),
     category: categoryInput.value.trim(),
     link: linkInput.value.trim() || "#",
+    avatar: avatarInput.value.trim(),
+    banner: bannerInput.value.trim()
   };
 }
 
 function resetForm() {
   form.reset();
+  avatarInput.value = "";
+  avatarFileInput.value = "";
+  avatarPreview.innerHTML = "";
+  bannerInput.value = "";
+  bannerFileInput.value = "";
+  bannerPreview.innerHTML = "";
   projectIdInput.value = "";
   formTitle.textContent = "Novo projeto";
   submitBtn.textContent = "Criar projeto";
@@ -88,6 +102,15 @@ function fillForm(project) {
   projectIdInput.value = project.id;
   titleInput.value = project.title || "";
   descriptionInput.value = project.description || "";
+  avatarInput.value = project.avatar || "";
+  avatarPreview.innerHTML = project.avatar
+  ? `<img src="${project.avatar}" alt="Preview do avatar">`
+  : "";
+  bannerInput.value = project.banner || "";
+
+  bannerPreview.innerHTML = project.banner
+    ? `<img src="${project.banner}" alt="Preview do banner">`
+    : "";
   statusInput.value = project.status || "building";
   progressInput.value = project.progress || 0;
   tagsInput.value = Array.isArray(project.tags) ? project.tags.join(", ") : "";
@@ -121,6 +144,7 @@ function renderProjectsList() {
         <p class="project-desc">${project.description || ""}</p>
 
         <div class="project-meta">
+          <span>Avatar: ${project.avatar ? "Sim" : "Não"}</span>
           <span>ID: ${project.id}</span>
           <span>Ano: ${project.year || "-"}</span>
           <span>Categoria: ${project.category || "-"}</span>
@@ -294,6 +318,123 @@ logoutBtn.addEventListener("click", () => {
   clearToken();
   resetForm();
   showLogin();
+});
+
+
+async function convertImageToWebP(file, quality = 0.82, maxSize = 512) {
+  const imageBitmap = await createImageBitmap(file);
+
+  let width = imageBitmap.width;
+  let height = imageBitmap.height;
+
+  if (width > maxSize || height > maxSize) {
+    const ratio = Math.min(maxSize / width, maxSize / height);
+    width = Math.round(width * ratio);
+    height = Math.round(height * ratio);
+  }
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(imageBitmap, 0, 0, width, height);
+
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => {
+      if (!blob) return reject(new Error("Erro ao converter imagem para WebP."));
+      resolve(new File([blob], "avatar.webp", { type: "image/webp" }));
+    }, "image/webp", quality);
+  });
+}
+
+async function uploadProjectAvatar(file) {
+  const webpFile = await convertImageToWebP(file);
+
+  const formData = new FormData();
+  formData.append("file", webpFile);
+
+  const response = await fetch("https://bidjory-api.bidjorysamuel.workers.dev/upload/project-avatar", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    body: formData
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || "Erro ao enviar imagem.");
+  }
+
+  return result.url;
+}
+
+async function uploadProjectBanner(file) {
+  const webpFile = await convertImageToWebP(file, 0.82, 1200);
+
+  const formData = new FormData();
+  formData.append("file", webpFile);
+
+  const response = await fetch("https://bidjory-api.bidjorysamuel.workers.dev/upload/project-banner", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    },
+    body: formData
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.error || "Erro ao enviar banner.");
+  }
+
+  return result.url;
+}
+
+
+avatarFileInput.addEventListener("change", async () => {
+  const file = avatarFileInput.files[0];
+  if (!file) return;
+
+  try {
+    showMessage("Convertendo imagem para WebP e enviando...");
+
+    const url = await uploadProjectAvatar(file);
+
+    avatarInput.value = url;
+
+    avatarPreview.innerHTML = `
+      <img src="${url}" alt="Preview do avatar">
+    `;
+
+    showMessage("Imagem enviada com sucesso.", "success");
+  } catch (error) {
+    showMessage(error.message, "error");
+  }
+});
+
+bannerFileInput.addEventListener("change", async () => {
+  const file = bannerFileInput.files[0];
+  if (!file) return;
+
+  try {
+    showMessage("Convertendo banner para WebP e enviando...");
+
+    const url = await uploadProjectBanner(file);
+
+    bannerInput.value = url;
+
+    bannerPreview.innerHTML = `
+      <img src="${url}" alt="Preview do banner">
+    `;
+
+    showMessage("Banner enviado com sucesso.", "success");
+  } catch (error) {
+    showMessage(error.message, "error");
+  }
 });
 
 form.addEventListener("submit", async (event) => {
