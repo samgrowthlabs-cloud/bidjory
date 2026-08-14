@@ -6,6 +6,7 @@
 let projects = [];
 
 const API_URL = "https://bidjory-api.bidjorysamuel.workers.dev/projects";
+const SOCIAL_SETTINGS_CATEGORY = "__site_social_settings__";
 
 const statusLabels = {
     active: "Ativo",
@@ -71,7 +72,8 @@ async function loadProjects() {
             throw new Error("Erro ao buscar projetos");
         }
 
-        projects = await response.json();
+        const allProjects = await response.json();
+        projects = allProjects.filter(project => project.category !== SOCIAL_SETTINGS_CATEGORY);
 
         renderProjects();
 

@@ -37,6 +37,20 @@
     </section>
 
     <section class="admin-grid">
+      <form id="socialForm" class="admin-card social-card">
+        <h2>Redes sociais</h2>
+        <p class="muted">Preencha somente as redes que deseja exibir na página de contato e no rodapé.</p>
+        <label>Instagram <input type="url" id="socialInstagram" placeholder="https://instagram.com/seuusuario"></label>
+        <label>YouTube <input type="url" id="socialYoutube" placeholder="https://youtube.com/@seucanal"></label>
+        <label>TikTok <input type="url" id="socialTiktok" placeholder="https://tiktok.com/@seuusuario"></label>
+        <label>LinkedIn <input type="url" id="socialLinkedin" placeholder="https://linkedin.com/in/seuusuario"></label>
+        <label>X / Twitter <input type="url" id="socialX" placeholder="https://x.com/seuusuario"></label>
+        <label>Facebook <input type="url" id="socialFacebook" placeholder="https://facebook.com/seuusuario"></label>
+        <label>GitHub <input type="url" id="socialGithub" placeholder="https://github.com/seuusuario"></label>
+        <button type="submit" id="saveSocialsBtn">Salvar redes sociais</button>
+        <p id="socialMessage" aria-live="polite"></p>
+      </form>
+
       <form id="projectForm" class="admin-card">
         <h2 id="formTitle">Novo projeto</h2>
 

@@ -53,6 +53,9 @@ body {
   gap: 24px;
 }
 
+.social-card { grid-column: 1 / -1; }
+.social-card .muted { line-height: 1.5; margin-top: -8px; }
+
 h2 {
   margin-bottom: 18px;
   font-size: 1.25rem;
@@ -164,6 +167,10 @@ button.danger {
 #message.error {
   color: #ff6b6b;
 }
+
+#socialMessage { min-height: 22px; font-size: 0.95rem; }
+#socialMessage.success { color: #55ff9f; }
+#socialMessage.error { color: #ff6b6b; }
 
 .projects-list {
   display: flex;

@@ -1,4 +1,5 @@
 const API_URL = "https://bidjory-api.bidjorysamuel.workers.dev/projects";
+const SOCIAL_SETTINGS_CATEGORY = "__site_social_settings__";
 
 // LOGIN
 const loginScreen = document.getElementById("loginScreen");
@@ -31,8 +32,21 @@ const avatarPreview = document.getElementById("avatarPreview");
 const bannerInput = document.getElementById("banner");
 const bannerFileInput = document.getElementById("bannerFile");
 const bannerPreview = document.getElementById("bannerPreview");
+const socialForm = document.getElementById("socialForm");
+const saveSocialsBtn = document.getElementById("saveSocialsBtn");
+const socialMessage = document.getElementById("socialMessage");
+const socialInputs = {
+  instagram: document.getElementById("socialInstagram"),
+  youtube: document.getElementById("socialYoutube"),
+  tiktok: document.getElementById("socialTiktok"),
+  linkedin: document.getElementById("socialLinkedin"),
+  x: document.getElementById("socialX"),
+  facebook: document.getElementById("socialFacebook"),
+  github: document.getElementById("socialGithub")
+};
 
 let projects = [];
+let socialSettingsProject = null;
 
 function getToken() {
   return localStorage.getItem("bidjory_admin_token") || "";
@@ -57,6 +71,23 @@ function showAdminPanel() {
   adminPanel.classList.remove("hidden");
   loginMessage.textContent = "";
   loadProjects();
+}
+
+function showSocialMessage(text, type = "") {
+  socialMessage.textContent = text;
+  socialMessage.className = type;
+}
+
+function fillSocialForm(project) {
+  let settings = {};
+  try {
+    settings = project?.description ? JSON.parse(project.description) : {};
+  } catch {
+    settings = {};
+  }
+  Object.entries(socialInputs).forEach(([key, input]) => {
+    input.value = settings[key] || "";
+  });
 }
 
 function showMessage(text, type = "") {
@@ -171,7 +202,10 @@ async function loadProjects() {
       throw new Error("Erro ao carregar projetos");
     }
 
-    projects = await response.json();
+    const allProjects = await response.json();
+    socialSettingsProject = allProjects.find(project => project.category === SOCIAL_SETTINGS_CATEGORY) || null;
+    projects = allProjects.filter(project => project.category !== SOCIAL_SETTINGS_CATEGORY);
+    fillSocialForm(socialSettingsProject);
     renderProjectsList();
 
   } catch (error) {
@@ -296,6 +330,7 @@ loginBtn.addEventListener("click", async () => {
   loginMessage.textContent = "";
 
   try {
+    await testToken(token);
     setToken(token);
     showAdminPanel();
 
@@ -494,12 +529,70 @@ form.addEventListener("submit", async (event) => {
 cancelEditBtn.addEventListener("click", resetForm);
 reloadBtn.addEventListener("click", loadProjects);
 
-document.addEventListener("DOMContentLoaded", () => {
+socialForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!getToken()) {
+    showLogin("Faça login novamente.");
+    return;
+  }
+
+  const settings = Object.fromEntries(
+    Object.entries(socialInputs)
+      .map(([key, input]) => [key, input.value.trim()])
+      .filter(([, value]) => value)
+  );
+  const settingsProject = {
+    title: "Configurações de redes sociais",
+    description: JSON.stringify(settings),
+    status: "private",
+    progress: 0,
+    tags: [],
+    year: "",
+    category: SOCIAL_SETTINGS_CATEGORY,
+    link: "#",
+    avatar: "",
+    banner: ""
+  };
+
+  saveSocialsBtn.disabled = true;
+  saveSocialsBtn.textContent = "Salvando...";
+  showSocialMessage("");
+
+  try {
+    const result = socialSettingsProject
+      ? await updateProject(socialSettingsProject.id, settingsProject)
+      : await createProject(settingsProject);
+    if (!result.success) {
+      if (/autorizado|unauthorized/i.test(result.error || "")) {
+        clearToken();
+        showLogin("Token inválido ou expirado. Entre novamente com o ADMIN_TOKEN do Worker.");
+        return;
+      }
+      throw new Error(result.error || "Erro ao salvar redes sociais.");
+    }
+    await loadProjects();
+    showSocialMessage("Redes sociais salvas com sucesso.", "success");
+  } catch (error) {
+    showSocialMessage(error.message, "error");
+  } finally {
+    saveSocialsBtn.disabled = false;
+    saveSocialsBtn.textContent = "Salvar redes sociais";
+  }
+});
+
+document.addEventListener("DOMContentLoaded", async () => {
   const savedToken = getToken();
 
-  if (savedToken) {
-    showAdminPanel();
-  } else {
+  if (!savedToken) {
     showLogin();
+    return;
+  }
+
+  try {
+    await testToken(savedToken);
+    showAdminPanel();
+  } catch {
+    clearToken();
+    showLogin("Sua sessão não é mais válida. Digite novamente o ADMIN_TOKEN do Worker.");
   }
 });
