@@ -50,11 +50,19 @@ async function loadProjects() {
     const grid = document.getElementById('projetosGrid');
     if (!grid) return;
 
-    grid.innerHTML = `
-        <p class="projetos-loading">
-            Carregando projetos...
-        </p>
-    `;
+    grid.setAttribute('aria-busy', 'true');
+    grid.innerHTML = Array.from({ length: 6 }, (_, index) => `
+        <article class="projeto-card projeto-skeleton" aria-hidden="true" style="--skeleton-delay: ${index * 70}ms">
+            <div class="skeleton-block skeleton-banner"></div>
+            <div class="skeleton-block skeleton-avatar"></div>
+            <div class="skeleton-heading"><div class="skeleton-block skeleton-title"></div><div class="skeleton-block skeleton-status"></div></div>
+            <div class="skeleton-block skeleton-line skeleton-line--wide"></div>
+            <div class="skeleton-block skeleton-line skeleton-line--short"></div>
+            <div class="skeleton-tags"><div class="skeleton-block skeleton-tag"></div><div class="skeleton-block skeleton-tag skeleton-tag--short"></div></div>
+            <div class="skeleton-block skeleton-progress"></div>
+            <div class="skeleton-footer"><div class="skeleton-block skeleton-year"></div><div class="skeleton-block skeleton-button"></div></div>
+        </article>
+    `).join('');
 
     try {
         const response = await fetch(API_URL);
@@ -69,6 +77,7 @@ async function loadProjects() {
 
     } catch (error) {
         console.error("Erro ao carregar projetos:", error);
+        grid.removeAttribute('aria-busy');
 
         grid.innerHTML = `
             <p class="projetos-error">
@@ -85,6 +94,7 @@ function renderProjects() {
     const grid = document.getElementById('projetosGrid');
     if (!grid) return;
 
+    grid.removeAttribute('aria-busy');
     grid.innerHTML = '';
 
     if (!projects.length) {
@@ -180,12 +190,19 @@ function renderProjects() {
             <div class="projeto-footer">
                 <span class="projeto-year">${project.year || ""}</span>
 
-                <a href="${linkHref}" class="${linkClass}"${linkTarget} aria-label="${linkText}: ${project.title || "Projeto"}">
-                    ${linkText}
-                    ${linkIcon}
-                </a>
+                <div class="projeto-actions">
+                    <button class="projeto-expand" type="button" aria-label="Ver detalhes de ${project.title || "Projeto"}">Expandir <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M5 2H2v3M9 2h3v3M5 12H2V9m7 3h3V9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></button>
+                    <a href="${linkHref}" class="${linkClass}"${linkTarget} aria-label="${linkText}: ${project.title || "Projeto"}">
+                        ${linkText}
+                        ${linkIcon}
+                    </a>
+                </div>
             </div>
         `;
+
+        card.querySelector('.projeto-expand').addEventListener('click', () => {
+            openProjectModal(project, { statusLabel, statusClass, progress, progressColor, hasLink, linkHref, linkText });
+        });
 
         grid.appendChild(card);
     });
@@ -196,6 +213,43 @@ function renderProjects() {
 // ==========================================
 // ANIMAÇÕES
 // ==========================================
+function openProjectModal(project, details) {
+    document.querySelector('.projeto-modal')?.remove();
+    const modal = document.createElement('div');
+    modal.className = 'projeto-modal';
+    modal.setAttribute('role', 'dialog');
+    modal.setAttribute('aria-modal', 'true');
+    modal.setAttribute('aria-labelledby', 'projetoModalTitle');
+    const tags = Array.isArray(project.tags) ? project.tags : [];
+    modal.innerHTML = `
+        <div class="projeto-modal-backdrop" data-close-modal></div>
+        <article class="projeto-modal-content">
+            <button class="projeto-modal-close" type="button" data-close-modal aria-label="Fechar detalhes"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></button>
+            <div class="projeto-modal-banner ${project.banner ? '' : 'projeto-banner--fallback'}">${project.banner ? `<img src="${project.banner}" alt="Banner do projeto ${project.title || ''}">` : ''}</div>
+            <div class="projeto-modal-body">
+                <div class="projeto-modal-heading">
+                    ${project.avatar ? `<div class="projeto-modal-avatar"><img src="${project.avatar}" alt=""></div>` : `<div class="projeto-modal-avatar projeto-avatar--fallback">B</div>`}
+                    <div><span class="status ${details.statusClass}">${details.statusLabel}</span><h2 id="projetoModalTitle">${project.title || ''}</h2></div>
+                </div>
+                <p class="projeto-modal-desc">${project.description || ''}</p>
+                <div class="projeto-tags">${tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+                <div class="projeto-modal-meta"><div><span>Progresso</span><strong>${details.progress}%</strong></div><div class="projeto-progress"><div class="projeto-progress-bar" style="width:${details.progress}%; background:${details.progressColor}"></div></div></div>
+                <div class="projeto-modal-footer"><span class="projeto-year">${project.year || ''}</span>${details.hasLink ? `<a href="${details.linkHref}" class="projeto-link projeto-link--active" target="_blank" rel="noopener noreferrer">Abrir projeto <span aria-hidden="true">↗</span></a>` : `<span class="projeto-link projeto-link--disabled">${details.linkText}</span>`}</div>
+            </div>
+        </article>`;
+    const closeModal = () => {
+        modal.classList.remove('is-open');
+        document.body.classList.remove('modal-open');
+        document.removeEventListener('keydown', handleKeydown);
+        setTimeout(() => modal.remove(), 220);
+    };
+    const handleKeydown = event => { if (event.key === 'Escape') closeModal(); };
+    modal.querySelectorAll('[data-close-modal]').forEach(element => element.addEventListener('click', closeModal));
+    document.body.appendChild(modal);
+    document.body.classList.add('modal-open');
+    document.addEventListener('keydown', handleKeydown);
+    requestAnimationFrame(() => { modal.classList.add('is-open'); modal.querySelector('.projeto-modal-close').focus(); });
+}
 function initRevealAnimations() {
     setTimeout(() => {
         document.querySelectorAll('.reveal:not(.visible)').forEach(el => {
