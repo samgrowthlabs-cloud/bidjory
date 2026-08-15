@@ -20,6 +20,8 @@ function renderTimeline(timeline, items) {
         const block = document.createElement('div');
         block.className = 'sobre-block';
         block.style.gridRow = String(index + 1);
+        block.dataset.side = index % 2 === 0 ? 'left' : 'right';
+        block.dataset.step = String(index + 1).padStart(2, '0');
 
         const dot = document.createElement('span');
         dot.className = 'timeline-dot';
@@ -67,10 +69,10 @@ function initTimelineAnimation(timeline) {
     const updateTimeline = () => {
         const vh = window.innerHeight;
         const rect = timeline.getBoundingClientRect();
-        const start = vh * 0.72;
-        const distance = Math.max(rect.height - start + vh * 0.3, 1);
+        const start = vh * (window.innerWidth <= 768 ? 0.38 : 0.32);
+        const distance = Math.max(rect.height - vh * (window.innerWidth <= 768 ? 0.5 : 0.42), 1);
         timeline.style.setProperty('--timeline-progress', Math.min(Math.max((start - rect.top) / distance, 0), 1).toFixed(4));
-        const focusLine = vh * 0.5;
+        const focusLine = vh * (window.innerWidth <= 768 ? 0.46 : 0.5);
         let activeCard = null;
         let closest = Infinity;
 
@@ -79,7 +81,8 @@ function initTimelineAnimation(timeline) {
             const center = cardRect.top + cardRect.height / 2;
             const visible = cardRect.top < vh * 0.88;
             const focusDistance = Math.abs(center - focusLine);
-            const focus = reduceMotion ? 1 : Math.max(0.08, 1 - focusDistance / (vh * 0.62));
+            const focusRange = window.innerWidth <= 768 ? vh * 0.72 : vh * 0.66;
+            const focus = reduceMotion ? 1 : Math.max(0.04, 1 - focusDistance / focusRange);
             card.style.setProperty('--focus', focus.toFixed(3));
             card.classList.toggle('is-visible', visible);
             card.classList.toggle('is-passed', center < focusLine);
@@ -105,9 +108,42 @@ function initTimelineAnimation(timeline) {
     updateTimeline();
 }
 
+
+function initVisionAnimation() {
+    const vision = document.querySelector('.sobre-visao');
+    if (!vision) return;
+
+    const text = vision.querySelector('p');
+    if (text && !text.dataset.animated) {
+        const content = text.textContent.trim();
+        text.setAttribute('aria-label', content);
+        text.textContent = '';
+        content.split(/\s+/).forEach((word, index, words) => {
+            const span = document.createElement('span');
+            span.className = 'vision-word';
+            span.setAttribute('aria-hidden', 'true');
+            span.style.setProperty('--word-index', index);
+            span.textContent = word + (index < words.length - 1 ? '\u00a0' : '');
+            text.appendChild(span);
+        });
+        text.dataset.animated = 'true';
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+        vision.classList.toggle('is-focused', entry.isIntersecting);
+    }, {
+        threshold: window.innerWidth <= 768 ? 0.45 : 0.62,
+        rootMargin: '-12% 0px -12% 0px'
+    });
+
+    observer.observe(vision);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const yearEl = document.getElementById('year');
     if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    initVisionAnimation();
 
     if (window.Bidjory?.theme) {
         window.Bidjory.applyTheme(window.Bidjory.theme);

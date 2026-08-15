@@ -42,7 +42,7 @@ const socialNetworks = {
     instagram: { label: "Instagram", icon: "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"4.2\"/><circle cx=\"17.4\" cy=\"6.7\" r=\"1\" class=\"social-icon-fill\"/></svg>" },
     youtube: { label: "YouTube", icon: "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M21.2 7.1a2.8 2.8 0 0 0-2-2C17.4 4.6 12 4.6 12 4.6s-5.4 0-7.2.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 2.3 12a29 29 0 0 0 .5 4.9 2.8 2.8 0 0 0 2 2c1.8.5 7.2.5 7.2.5s5.4 0 7.2-.5a2.8 2.8 0 0 0 2-2 29 29 0 0 0 .5-4.9 29 29 0 0 0-.5-4.9Z\"/><path d=\"m10 15.2 5.2-3.2L10 8.8v6.4Z\" class=\"social-icon-fill\"/></svg>" },
     tiktok: { label: "TikTok", icon: "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M14.5 3v11.2a4.7 4.7 0 1 1-4-4.6v3.2a1.6 1.6 0 1 0 .8 1.4V3h3.2Zm0 0c.5 2.6 2 4 4.5 4.4v3.2A8.2 8.2 0 0 1 14.5 9\"/></svg>" },
-    linkedin: { label: "LinkedIn", icon: "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M5.4 8.7V19M5.4 5.2v.1M10.1 19v-5.7c0-2.5 4.6-3.2 4.6.4V19M10.1 9.8V19M18.8 19v-6.2\"/></svg>" },
+    linkedin: { label: "LinkedIn", icon: "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path class=\"social-icon-fill\" d=\"M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45Z\"/></svg>" },
     x: { label: "X / Twitter", icon: "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 4 20 20M20 4 4 20\"/></svg>" },
     facebook: { label: "Facebook", icon: "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M14.5 21v-8h2.8l.4-3h-3.2V8.1c0-.9.3-1.5 1.6-1.5H18V4a24 24 0 0 0-2.5-.1c-2.5 0-4.2 1.5-4.2 4.4V10H8.5v3h2.8v8\"/></svg>" },
     github: { label: "GitHub", icon: "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2.8a9.5 9.5 0 0 0-3 18.5c.5.1.7-.2.7-.5v-1.9c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 0 1.6 1 1.6 1 .9 1.6 2.4 1.1 3 .9.1-.7.4-1.1.7-1.3-2.3-.3-4.7-1.1-4.7-5a4 4 0 0 1 1-2.7c-.1-.3-.4-1.3.1-2.7 0 0 .9-.3 2.8 1a9.7 9.7 0 0 1 5.1 0c2-1.3 2.8-1 2.8-1 .6 1.4.2 2.4.1 2.7a4 4 0 0 1 1 2.7c0 3.9-2.4 4.7-4.7 5 .4.3.7 1 .7 1.9v2.7c0 .3.2.6.7.5A9.5 9.5 0 0 0 12 2.8Z\"/></svg>" }
@@ -173,8 +173,72 @@ function updateYear() {
     if (el) el.textContent = new Date().getFullYear();
 }
 
+
+function splitAnimatedWords(element, className, highlights = []) {
+    if (!element || element.dataset.motionReady) return;
+    const content = element.textContent.trim();
+    element.setAttribute('aria-label', content);
+    element.textContent = '';
+
+    content.split(/\s+/).forEach((word, index, words) => {
+        const span = document.createElement('span');
+        const normalized = word.toLocaleLowerCase('pt-BR').replace(/[.,]/g, '');
+        span.className = `${className}${highlights.includes(normalized) ? ' is-highlight' : ''}`;
+        span.setAttribute('aria-hidden', 'true');
+        span.style.setProperty('--word-index', index);
+        span.textContent = word + (index < words.length - 1 ? '\u00a0' : '');
+        element.appendChild(span);
+    });
+
+    element.dataset.motionReady = 'true';
+}
+
+function initHomeMotion() {
+    const hero = document.querySelector('.hero');
+    const headline = document.querySelector('.hero-headline');
+    if (!hero || !headline) return;
+
+    splitAnimatedWords(headline, 'hero-word', ['finanças', 'mídia', 'tecnologia']);
+
+    const intro = document.querySelector('.intro-content');
+    const introMain = intro?.querySelector('.intro-text');
+    splitAnimatedWords(introMain, 'intro-word', ['educação', 'financeira', 'mídia', 'tecnologia']);
+
+    if (intro) {
+        const introObserver = new IntersectionObserver(([entry]) => {
+            intro.classList.toggle('is-focused', entry.isIntersecting);
+        }, { threshold: window.innerWidth <= 768 ? 0.24 : 0.58, rootMargin: window.innerWidth <= 768 ? '-18% 0px -18% 0px' : '-8% 0px -8% 0px' });
+        introObserver.observe(intro);
+    }
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) return;
+
+    let ticking = false;
+    const updateDepth = () => {
+        const progress = Math.min(window.scrollY / Math.max(window.innerHeight * .72, 1), 1);
+        hero.style.setProperty('--hero-depth', progress.toFixed(3));
+        ticking = false;
+    };
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(updateDepth);
+        }
+    }, { passive: true });
+    updateDepth();
+
+    hero.addEventListener('pointermove', event => {
+        if (event.pointerType === 'touch') return;
+        const rect = hero.getBoundingClientRect();
+        hero.style.setProperty('--pointer-x', `${((event.clientX - rect.left) / rect.width) * 100}%`);
+        hero.style.setProperty('--pointer-y', `${((event.clientY - rect.top) / rect.height) * 100}%`);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initReveal();
+    initHomeMotion();
     initMobileMenu();
     initHeaderScroll();
     updateYear();
