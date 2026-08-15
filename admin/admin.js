@@ -1,5 +1,14 @@
 const API_URL = "https://bidjory-api.bidjorysamuel.workers.dev/projects";
 const SOCIAL_SETTINGS_CATEGORY = "__site_social_settings__";
+const TIMELINE_SETTINGS_CATEGORY = "__site_timeline_settings__";
+const DEFAULT_TIMELINE_ITEMS = [
+  { year: "2021", description: "Desde cedo desenvolvi uma forte curiosidade por computadores. Nesse período comecei a explorar tecnologia por conta própria e a entender como sistemas e softwares funcionavam." },
+  { year: "2022", description: "Comecei a programar de forma autodidata e a aprender na prática. Também realizei pequenos trabalhos freelance na área, ganhando experiência real com desenvolvimento, mesmo de forma inicial." },
+  { year: "2023", description: "Tive meu primeiro contato mais profundo com finanças e investimentos. Comecei a estudar o assunto por interesse próprio e a entender como o mercado financeiro funciona." },
+  { year: "2024", description: "Aprofundei ainda mais meus estudos em finanças e comecei a pensar em como unir tecnologia, conteúdo e educação financeira em algo mais estruturado." },
+  { year: "2025", description: "Criei a ideia de um projeto próprio e comecei a estruturar mentalmente uma possível holding focada em finanças, mídia e tecnologia." },
+  { year: "2026", description: "Iniciei o projeto Samzin, um canal focado em finanças e documentários, com a intenção de criar conteúdo educativo e narrativo sobre o tema." }
+];
 
 // LOGIN
 const loginScreen = document.getElementById("loginScreen");
@@ -35,6 +44,14 @@ const bannerPreview = document.getElementById("bannerPreview");
 const socialForm = document.getElementById("socialForm");
 const saveSocialsBtn = document.getElementById("saveSocialsBtn");
 const socialMessage = document.getElementById("socialMessage");
+const timelineForm = document.getElementById("timelineForm");
+const timelineEditIndexInput = document.getElementById("timelineEditIndex");
+const timelineYearInput = document.getElementById("timelineYear");
+const timelineDescriptionInput = document.getElementById("timelineDescription");
+const saveTimelineItemBtn = document.getElementById("saveTimelineItemBtn");
+const cancelTimelineEditBtn = document.getElementById("cancelTimelineEditBtn");
+const timelineItemsList = document.getElementById("timelineItemsList");
+const timelineMessage = document.getElementById("timelineMessage");
 const socialInputs = {
   instagram: document.getElementById("socialInstagram"),
   youtube: document.getElementById("socialYoutube"),
@@ -47,6 +64,8 @@ const socialInputs = {
 
 let projects = [];
 let socialSettingsProject = null;
+let timelineSettingsProject = null;
+let timelineItems = [];
 
 function getToken() {
   return localStorage.getItem("bidjory_admin_token") || "";
@@ -88,6 +107,47 @@ function fillSocialForm(project) {
   Object.entries(socialInputs).forEach(([key, input]) => {
     input.value = settings[key] || "";
   });
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"]/g, character => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;"
+  })[character]);
+}
+
+function showTimelineMessage(text, type = "") {
+  timelineMessage.textContent = text;
+  timelineMessage.className = type;
+}
+
+function resetTimelineForm() {
+  timelineForm.reset();
+  timelineEditIndexInput.value = "";
+  saveTimelineItemBtn.textContent = "Adicionar acontecimento";
+  cancelTimelineEditBtn.classList.add("hidden");
+}
+
+function renderTimelineItems() {
+  if (!timelineItems.length) {
+    timelineItemsList.innerHTML = '<p class="muted">Nenhum acontecimento cadastrado.</p>';
+    return;
+  }
+
+  timelineItemsList.innerHTML = timelineItems.map((item, index) => `
+    <article class="project-item">
+      <div class="project-top">
+        <div class="project-title">${escapeHtml(item.year)}</div>
+      </div>
+      <p class="project-desc">${escapeHtml(item.description)}</p>
+      <div class="project-actions">
+        <button type="button" onclick="editTimelineItem(${index})">Editar</button>
+        <button type="button" class="danger" onclick="deleteTimelineItem(${index})">Excluir</button>
+      </div>
+    </article>
+  `).join("");
 }
 
 function showMessage(text, type = "") {
@@ -204,8 +264,21 @@ async function loadProjects() {
 
     const allProjects = await response.json();
     socialSettingsProject = allProjects.find(project => project.category === SOCIAL_SETTINGS_CATEGORY) || null;
-    projects = allProjects.filter(project => project.category !== SOCIAL_SETTINGS_CATEGORY);
+    timelineSettingsProject = allProjects.find(project => project.category === TIMELINE_SETTINGS_CATEGORY) || null;
+    try {
+      const savedTimeline = timelineSettingsProject?.description
+        ? JSON.parse(timelineSettingsProject.description)
+        : DEFAULT_TIMELINE_ITEMS;
+      timelineItems = Array.isArray(savedTimeline) ? savedTimeline : DEFAULT_TIMELINE_ITEMS;
+    } catch {
+      timelineItems = DEFAULT_TIMELINE_ITEMS;
+    }
+    projects = allProjects.filter(project =>
+      project.category !== SOCIAL_SETTINGS_CATEGORY &&
+      project.category !== TIMELINE_SETTINGS_CATEGORY
+    );
     fillSocialForm(socialSettingsProject);
+    renderTimelineItems();
     renderProjectsList();
 
   } catch (error) {
@@ -526,6 +599,78 @@ form.addEventListener("submit", async (event) => {
   }
 });
 
+async function persistTimelineItems(nextItems) {
+  const settingsProject = {
+    title: "Configurações da linha do tempo",
+    description: JSON.stringify(nextItems),
+    status: "private",
+    progress: 0,
+    tags: [],
+    year: "",
+    category: TIMELINE_SETTINGS_CATEGORY,
+    link: "#",
+    avatar: "",
+    banner: ""
+  };
+
+  const result = timelineSettingsProject
+    ? await updateProject(timelineSettingsProject.id, settingsProject)
+    : await createProject(settingsProject);
+
+  if (!result.success) throw new Error(result.error || "Erro ao salvar a linha do tempo.");
+  await loadProjects();
+}
+
+window.editTimelineItem = function(index) {
+  const item = timelineItems[index];
+  if (!item) return;
+  timelineEditIndexInput.value = index;
+  timelineYearInput.value = item.year;
+  timelineDescriptionInput.value = item.description;
+  saveTimelineItemBtn.textContent = "Salvar alteração";
+  cancelTimelineEditBtn.classList.remove("hidden");
+  timelineYearInput.focus();
+};
+
+window.deleteTimelineItem = async function(index) {
+  if (!timelineItems[index] || !confirm("Excluir este acontecimento da linha do tempo?")) return;
+  showTimelineMessage("Salvando...");
+  try {
+    await persistTimelineItems(timelineItems.filter((_, itemIndex) => itemIndex !== index));
+    resetTimelineForm();
+    showTimelineMessage("Acontecimento excluído.", "success");
+  } catch (error) {
+    showTimelineMessage(error.message, "error");
+  }
+};
+
+timelineForm.addEventListener("submit", async event => {
+  event.preventDefault();
+  const item = {
+    year: timelineYearInput.value.trim(),
+    description: timelineDescriptionInput.value.trim()
+  };
+  if (!item.year || !item.description) return;
+
+  const editIndex = timelineEditIndexInput.value;
+  const nextItems = [...timelineItems];
+  if (editIndex === "") nextItems.push(item);
+  else nextItems[Number(editIndex)] = item;
+
+  saveTimelineItemBtn.disabled = true;
+  showTimelineMessage("Salvando...");
+  try {
+    await persistTimelineItems(nextItems);
+    resetTimelineForm();
+    showTimelineMessage(editIndex === "" ? "Acontecimento adicionado." : "Acontecimento atualizado.", "success");
+  } catch (error) {
+    showTimelineMessage(error.message, "error");
+  } finally {
+    saveTimelineItemBtn.disabled = false;
+  }
+});
+
+cancelTimelineEditBtn.addEventListener("click", resetTimelineForm);
 cancelEditBtn.addEventListener("click", resetForm);
 reloadBtn.addEventListener("click", loadProjects);
 

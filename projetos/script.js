@@ -6,7 +6,8 @@
 let projects = [];
 
 const API_URL = "https://bidjory-api.bidjorysamuel.workers.dev/projects";
-const SOCIAL_SETTINGS_CATEGORY = "__site_social_settings__";
+const PROJECTS_SOCIAL_SETTINGS_CATEGORY = "__site_social_settings__";
+const PROJECTS_TIMELINE_SETTINGS_CATEGORY = "__site_timeline_settings__";
 
 const statusLabels = {
     active: "Ativo",
@@ -73,7 +74,10 @@ async function loadProjects() {
         }
 
         const allProjects = await response.json();
-        projects = allProjects.filter(project => project.category !== SOCIAL_SETTINGS_CATEGORY);
+        projects = allProjects.filter(project =>
+            project.category !== PROJECTS_SOCIAL_SETTINGS_CATEGORY &&
+            project.category !== PROJECTS_TIMELINE_SETTINGS_CATEGORY
+        );
 
         renderProjects();
 

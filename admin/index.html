@@ -51,6 +51,21 @@
         <p id="socialMessage" aria-live="polite"></p>
       </form>
 
+      <section class="admin-card timeline-card">
+        <h2>Linha do tempo — Sobre</h2>
+        <p class="muted">Adicione, edite ou exclua acontecimentos exibidos na página Sobre.</p>
+        <form id="timelineForm">
+          <input type="hidden" id="timelineEditIndex" value="">
+          <label>Ano <input type="text" id="timelineYear" placeholder="2026" required></label>
+          <label>Descrição <textarea id="timelineDescription" rows="4" required></textarea></label>
+          <div class="actions">
+            <button type="submit" id="saveTimelineItemBtn">Adicionar acontecimento</button>
+            <button type="button" id="cancelTimelineEditBtn" class="secondary hidden">Cancelar edição</button>
+          </div>
+        </form>
+        <div id="timelineItemsList" class="projects-list timeline-items-list"></div>
+        <p id="timelineMessage" aria-live="polite"></p>
+      </section>
       <form id="projectForm" class="admin-card">
         <h2 id="formTitle">Novo projeto</h2>
 
@@ -148,6 +163,6 @@
     </section>
   </main>
 
-  <script src="admin.js"></script>
+  <script src="admin.js?v=1002"></script>
 </body>
 </html>

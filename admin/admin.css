@@ -315,3 +315,9 @@ button.danger {
   border-radius: 18px;
   border: 1px solid rgba(45, 212, 191, 0.35);
 }
+.timeline-card { grid-column: 1 / -1; }
+.timeline-card > .muted { margin: -8px 0 18px; line-height: 1.5; }
+.timeline-items-list { margin-top: 20px; }
+#timelineMessage { min-height: 22px; margin-top: 14px; font-size: 0.95rem; }
+#timelineMessage.success { color: #55ff9f; }
+#timelineMessage.error { color: #ff6b6b; }
